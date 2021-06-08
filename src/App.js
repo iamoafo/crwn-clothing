@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import Homepage from './pages/homepage/homepage.component';
 import {Route, Switch,Redirect} from 'react-router-dom';
 import SignInAndSignUp from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
@@ -18,7 +18,7 @@ import './App.css';
 
 
 
-class App extends React.Component {
+const App = ({currentUser,setCurrentUser,unsubscribeFromAuth}) => {
   // constructor(){
   //   super();
 
@@ -27,15 +27,11 @@ class App extends React.Component {
   //   };
     
   // }
-  
-
   unsubscribeFromAuth = null;
-  
-  
-componentDidMount(){
-  const {setCurrentUser} = this.props;
+  useEffect(() => {
+    
 
-  this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth =>{
+  unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth =>{
    if(userAuth){
      const userRef = await createUserProfileDocument(userAuth);
 
@@ -56,13 +52,17 @@ componentDidMount(){
  }
    
   });
+      },[])
 
-}
-componentWillUnmount(){
-  this.unsubscribeFromAuth();
-   }
+  
+  
+  
 
-  render(){
+// componentWillUnmount(){
+//   this.unsubscribeFromAuth();
+//    }
+
+  
   return (
     <div >
       <Header/>
@@ -71,12 +71,12 @@ componentWillUnmount(){
     <Route path='/shop' component={ShopPage}/>
     <Route path='/contact' component={ContactPage}/>
     <Route exact path='/checkout' component={CheckoutPage}/>
-    <Route exact path='/signin' render={() => this.props.currentUser ? (<Redirect TO='/'/>) : (<SignInAndSignUp/>)}/>
+    <Route exact path='/signin' render={() => currentUser ? (<Redirect TO='/'/>) : (<SignInAndSignUp/>)}/>
     
     </Switch>
     </div>
   );
-  }
+  
 }
 
 const mapStateToProps = createStructuredSelector({
